@@ -1,0 +1,9 @@
+node_modules/
+central/dist/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+relay/data/
+*.log
+.DS_Store
