@@ -1,0 +1,1 @@
+package androidx.work; public final class PeriodicWorkRequest { public static final class Builder { public Builder(Class<? extends ListenableWorker> k, long i, java.util.concurrent.TimeUnit u){} public PeriodicWorkRequest build(){return null;} } }

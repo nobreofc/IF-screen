@@ -1,0 +1,1 @@
+package android.app.usage; public final class UsageEvents { public boolean hasNextEvent(){return false;} public boolean getNextEvent(Event e){return false;} public static final class Event { public Event(){} public long getTimeStamp(){return 0;} public int getEventType(){return 0;} public String getPackageName(){return null;} } }

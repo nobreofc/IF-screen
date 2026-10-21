@@ -1,0 +1,2 @@
+package org.json; public class JSONArray { public JSONArray(){} public JSONArray put(long v){return this;} public JSONArray put(int v){return this;} public JSONArray put(Object v){return this;}
+ public int length(){return 0;} public JSONArray getJSONArray(int i) throws JSONException {return null;} public long getLong(int i) throws JSONException {return 0;} }

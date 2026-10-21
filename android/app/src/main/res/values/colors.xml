@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green">#2F9E41</color>
+    <color name="green_dark">#1D6E31</color>
+    <color name="green_deep">#145226</color>
+    <color name="green_light">#E5F5E8</color>
+    <color name="green_50">#F2FAF3</color>
+    <color name="green_200">#C7EACC</color>
+    <color name="bg">#F6F9F6</color>
+    <color name="card">#FFFFFF</color>
+    <color name="line">#E1E8E3</color>
+    <color name="ink">#142019</color>
+    <color name="ink2">#33443A</color>
+    <color name="muted">#637268</color>
+    <color name="red">#C8191E</color>
+    <color name="red_bg">#FDECEC</color>
+    <color name="amber">#A86206</color>
+    <color name="amber_bg">#FFF5E0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="ic_launcher_background">#2F9E41</color>
+</resources>

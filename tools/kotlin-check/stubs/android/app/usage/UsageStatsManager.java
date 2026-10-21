@@ -1,0 +1,1 @@
+package android.app.usage; public final class UsageStatsManager { public UsageEvents queryEvents(long a,long b){return null;} }

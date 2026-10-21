@@ -1,0 +1,83 @@
+{
+  "name": "ifscreen-central",
+  "version": "1.0.0",
+  "description": "IF Screen — Central de monitoramento de tempo de tela (IFRN)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node ../tools/simulator/simulate.js",
+    "dist:win": "electron-builder --win --x64 && makensis build/ifscreen.nsi"
+  },
+  "author": "Projeto IF Screen — IFRN",
+  "license": "MIT",
+  "dependencies": {
+    "sql.js": "^1.15.1"
+  },
+  "devDependencies": {
+    "electron": "^44.9.2",
+    "electron-builder": "^26.15.3",
+    "chart.js": "^4.5.1"
+  },
+  "private": true,
+  "build": {
+    "appId": "br.edu.ifrn.ifscreen.central",
+    "productName": "IF Screen Central",
+    "copyright": "IF Screen — IFRN",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*",
+      "build/icon.png",
+      "package.json",
+      "!node_modules/sql.js/dist/*.zip",
+      "!node_modules/sql.js/dist/sql-asm*",
+      "!node_modules/sql.js/dist/*-debug*",
+      "!node_modules/sql.js/dist/worker.*",
+      "!node_modules/sql.js/dist/*inline*",
+      "!node_modules/sql.js/dist/*browser*",
+      "!node_modules/sql.js/.devcontainer/**",
+      "!node_modules/sql.js/*.{md,svg,cjs,json}",
+      "node_modules/sql.js/package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "IF-Screen-Central-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "IF Screen Central",
+      "include": "build/installer.nsh",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerLanguages": [
+        "pt_BR"
+      ],
+      "language": "1046",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "electronLanguages": [
+      "pt-BR",
+      "en-US"
+    ]
+  },
+  "productName": "IF Screen Central"
+}

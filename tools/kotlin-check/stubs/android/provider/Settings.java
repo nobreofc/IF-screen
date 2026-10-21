@@ -1,0 +1,3 @@
+package android.provider; public final class Settings { public static final String ACTION_USAGE_ACCESS_SETTINGS="a", ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS="b", ACTION_APPLICATION_DETAILS_SETTINGS="c";
+ public static class SettingNotFoundException extends Exception {}
+ public static final class Global { public static final String AUTO_TIME="auto_time"; public static int getInt(android.content.ContentResolver cr, String n) throws SettingNotFoundException {return 0;} } }

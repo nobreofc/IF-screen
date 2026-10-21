@@ -1,0 +1,1 @@
+package androidx.work; public abstract class WorkManager { public static WorkManager getInstance(android.content.Context c){return null;} public abstract Object enqueueUniquePeriodicWork(String n, ExistingPeriodicWorkPolicy p, PeriodicWorkRequest r); }

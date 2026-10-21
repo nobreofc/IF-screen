@@ -1,0 +1,3 @@
+package android.app; import android.content.*; import android.os.IBinder;
+public abstract class Service extends Context { public static final int START_STICKY=1; public void onCreate(){} public int onStartCommand(Intent i,int f,int s){return 0;} public void onDestroy(){}
+ public abstract IBinder onBind(Intent i); public final void startForeground(int id, Notification n){} public final void startForeground(int id, Notification n, int type){} }

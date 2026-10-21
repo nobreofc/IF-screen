@@ -1,0 +1,1 @@
+package android.widget; public abstract class CompoundButton extends Button { public CompoundButton(android.content.Context c){super(c);} public boolean isChecked(){return false;} public void setChecked(boolean b){} }

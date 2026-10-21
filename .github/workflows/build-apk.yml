@@ -1,0 +1,47 @@
+name: Gerar APK do IF Screen
+
+on:
+  workflow_dispatch:
+    inputs:
+      relay_url:
+        description: "Endereço do servidor-ponte no Railway (ex.: https://ifscreen-relay-production.up.railway.app)"
+        required: false
+        default: ""
+      app_key:
+        description: "APP_KEY (a mesma configurada no Railway e na Central)"
+        required: false
+        default: "ifscreen-app-key"
+  push:
+    paths:
+      - "android/**"
+      - ".github/workflows/build-apk.yml"
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Compilar APK (release, assinado)
+        env:
+          RELAY: ${{ github.event.inputs.relay_url || vars.IFSCREEN_RELAY_URL }}
+          APPKEY: ${{ github.event.inputs.app_key || vars.IFSCREEN_APP_KEY || 'ifscreen-app-key' }}
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease -PIFSCREEN_RELAY_URL="$RELAY" -PIFSCREEN_APP_KEY="$APPKEY"
+          cp app/build/outputs/apk/release/app-release.apk ../IF-Screen-1.0.0.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IF-Screen-apk
+          path: IF-Screen-1.0.0.apk

@@ -1,0 +1,1 @@
+package android.net; public final class NetworkCapabilities { public static final int TRANSPORT_WIFI=1, TRANSPORT_ETHERNET=3; public boolean hasTransport(int t){return false;} }

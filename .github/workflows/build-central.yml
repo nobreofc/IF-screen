@@ -1,0 +1,36 @@
+name: Gerar instalador da Central (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "central/**"
+      - ".github/workflows/build-central.yml"
+
+jobs:
+  exe:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: central
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - name: Testes (simulação 100 aparelhos × 7 dias)
+        run: node ../tools/simulator/simulate.js
+        env:
+          N_DEVICES: "100"
+      - name: Empacotar aplicativo
+        run: npx electron-builder --win --x64
+      - name: Gerar instalador (NSIS)
+        run: |
+          choco install nsis -y --no-progress
+          & "C:\Program Files (x86)\NSIS\makensis.exe" build\ifscreen.nsi
+        shell: pwsh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IF-Screen-Central-Setup
+          path: central/dist/IF-Screen-Central-Setup-*.exe

@@ -1,0 +1,1 @@
+package android.widget; public class RadioGroup extends LinearLayout { public RadioGroup(android.content.Context c){super(c);} public void setOnCheckedChangeListener(OnCheckedChangeListener l){} public interface OnCheckedChangeListener { void onCheckedChanged(RadioGroup g, int id); } }

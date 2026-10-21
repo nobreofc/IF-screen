@@ -1,0 +1,1 @@
+package android.app; public class AppOpsManager { public static final String OPSTR_GET_USAGE_STATS="u"; public static final int MODE_ALLOWED=0; @Deprecated public int checkOpNoThrow(String op,int uid,String pkg){return 0;} }

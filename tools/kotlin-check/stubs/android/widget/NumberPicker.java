@@ -1,0 +1,3 @@
+package android.widget; public class NumberPicker extends LinearLayout { public NumberPicker(android.content.Context c){super(c);}
+ public void setMinValue(int v){} public int getMinValue(){return 0;} public void setMaxValue(int v){} public int getMaxValue(){return 0;} public void setWrapSelectorWheel(boolean b){} public boolean getWrapSelectorWheel(){return false;}
+ public void setDisplayedValues(String[] v){} public String[] getDisplayedValues(){return null;} public void setValue(int v){} public int getValue(){return 0;} }

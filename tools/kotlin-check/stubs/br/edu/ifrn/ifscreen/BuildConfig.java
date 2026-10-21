@@ -1,0 +1,1 @@
+package br.edu.ifrn.ifscreen; public final class BuildConfig { public static final String VERSION_NAME="1.0.0"; public static final String DEFAULT_RELAY_URL=""; public static final String APP_KEY="k"; }

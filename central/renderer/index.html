@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>IF Screen — Central</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="side">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#2F9E41"/><rect x="20" y="9" width="24" height="46" rx="6" fill="none" stroke="#fff" stroke-width="3.6"/><circle cx="32" cy="30.5" r="8.2" fill="none" stroke="#fff" stroke-width="3"/><path d="M32 26v4.6l3.2 2.1" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="27.5" y="47" width="9" height="2.8" rx="1.4" fill="#fff"/></svg>
+        <div><div class="t"><b>IF</b> Screen</div><div class="s">Central de monitoramento</div></div>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="foot">
+        <div class="inst" id="inst"></div>
+        <div class="conn"><span class="dot" id="dotLocal"></span><span id="txtLocal">Rede local</span></div>
+        <div class="conn"><span class="dot" id="dotRelay"></span><span id="txtRelay">Nuvem</span></div>
+      </div>
+    </aside>
+    <main class="main" id="main"><div class="page" id="page"></div></main>
+  </div>
+  <div id="print-root"></div>
+  <div class="toast" id="toast"></div>
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
