@@ -30,13 +30,21 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - uses: android-actions/setup-android@v3
+      # O Android SDK já vem instalado nos runners do GitHub (ANDROID_HOME).
+      # Só aceitamos as licenças e garantimos a plataforma 35.
+      - name: Preparar Android SDK
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platforms;android-35" "build-tools;34.0.0" "platform-tools" > /dev/null || true
 
       - name: Compilar APK (release, assinado)
         env:
           RELAY: ${{ github.event.inputs.relay_url || vars.IFSCREEN_RELAY_URL }}
           APPKEY: ${{ github.event.inputs.app_key || vars.IFSCREEN_APP_KEY || 'ifscreen-app-key' }}
         run: |
+          # Se o arquivo passou pelo Windows com quebras de linha CRLF, corrige antes de rodar
+          sed -i 's/\r$//' gradlew
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease -PIFSCREEN_RELAY_URL="$RELAY" -PIFSCREEN_APP_KEY="$APPKEY"
           cp app/build/outputs/apk/release/app-release.apk ../IF-Screen-1.0.0.apk
