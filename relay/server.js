@@ -28,7 +28,7 @@ const APP_KEY = process.env.APP_KEY || 'ifscreen-app-key';
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const STATE_FILE = path.join(DATA_DIR, 'relay-state.json');
 const MAX_BODY = 2 * 1024 * 1024; // 2 MB
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const RATE_LIMIT = Number(process.env.RATE_LIMIT_PER_MIN || 600); // por IP (escolas usam NAT: vários celulares, um IP)
 
 // ---------------------------------------------------------------- estado
@@ -37,6 +37,7 @@ const state = {
   devices: {}, // deviceId -> { deviceId, code, tokenHash, info, registeredAt, lastSeen, linked, participant }
   items: {}, // "deviceId|kind|key" -> { seq, deviceId, kind, key, version, payload, updatedAt, ackedVersion }
   config: { questionHour: 9, reminderHour: 20, showScreenTime: true, updatedAt: 0 },
+  forgotten: [], // aparelhos retirados do estudo (dados excluídos na Central): cadastro recusado
   centralLastSeen: 0,
   startedAt: Date.now(),
   epoch: crypto.randomBytes(8).toString('hex'), // muda quando o estado é perdido; a Central então relê tudo
@@ -175,6 +176,7 @@ const routes = {
     if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 64) return send(res, 400, { error: 'deviceId' });
     if (!CODE_RE.test(code || '')) return send(res, 400, { error: 'código inválido' });
     if (!token || String(token).length < 16) return send(res, 400, { error: 'token' });
+    if ((state.forgotten || []).includes(deviceId)) return send(res, 410, { error: 'aparelho retirado do estudo' });
     const tokenHash = sha256(token);
     const existing = state.devices[deviceId];
     if (existing && !safeEq(existing.tokenHash, tokenHash)) return send(res, 409, { error: 'aparelho já cadastrado com outro token' });
@@ -271,6 +273,17 @@ const routes = {
     for (const l of Array.isArray(b.links) ? b.links : []) {
       const d = state.devices[l.deviceId];
       if (d) { d.linked = !!l.linked; d.participant = l.participant || null; }
+    }
+    // LGPD: aparelhos cujos dados a Central excluiu — apaga cadastro e tudo o que estiver guardado aqui
+    if (Array.isArray(b.forgotten)) {
+      const set = new Set(state.forgotten || []);
+      for (const id of b.forgotten.slice(0, 10000)) {
+        if (typeof id !== 'string' || id.length > 64) continue;
+        set.add(id);
+        delete state.devices[id];
+        for (const k of Object.keys(state.items)) if (state.items[k].deviceId === id) delete state.items[k];
+      }
+      state.forgotten = [...set];
     }
     if (b.config && typeof b.config === 'object') {
       const c = b.config;

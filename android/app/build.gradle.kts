@@ -14,8 +14,8 @@ android {
         applicationId = "br.edu.ifrn.ifscreen"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
         buildConfigField("String", "DEFAULT_RELAY_URL", "\"$relayUrl\"")
         buildConfigField("String", "APP_KEY", "\"$appKey\"")
     }

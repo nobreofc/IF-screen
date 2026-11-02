@@ -60,6 +60,14 @@ async function main() {
   assert.equal(r.body.items.length, 1);
   assert.equal(r.body.items[0].version, 2000);
 
+  // exclusão a pedido do participante: a ponte apaga tudo do aparelho e recusa novo cadastro
+  r = await j('POST', '/api/v1/central/links', { links: [], forgotten: ['dev-1'] }, ch);
+  assert.equal(r.body.devices.length, 0);
+  r = await j('GET', '/api/v1/central/pull?after=0', null, ch);
+  assert.equal(r.body.items.filter((i) => i.deviceId === 'dev-1').length, 0);
+  assert.equal((await j('POST', '/api/v1/device/register', dev, { 'x-app-key': 'app-teste' })).status, 410);
+  assert.equal((await j('GET', '/api/v1/device/status', null, dh)).status, 401);
+
   console.log('relay: todos os testes passaram');
   server.close();
   process.exit(0);

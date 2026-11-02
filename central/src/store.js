@@ -20,6 +20,7 @@ const DEFAULTS = {
   relayCursor: '0',
   relayEpoch: '',
   logoFile: '',
+  deletedDevices: '[]', // aparelhos cujos dados foram excluídos a pedido do participante (LGPD)
 };
 
 const sha256 = (s) => crypto.createHash('sha256').update(String(s)).digest('hex');
@@ -85,6 +86,7 @@ class Store {
     const th = tokenHash || (token ? sha256(token) : null);
     const c = normalizeCode(code);
     if (!deviceId || !c || !th) return { ok: false, error: 'dados de cadastro inválidos' };
+    if (this.isDeleted(deviceId)) return { ok: false, status: 410, deleted: true, error: 'aparelho retirado do estudo (dados excluídos)' };
     const cur = this.db.get('SELECT * FROM devices WHERE device_id=?', [deviceId]);
     if (cur && cur.token_hash !== th) return { ok: false, status: 409, error: 'aparelho já cadastrado com outro token' };
     const clash = this.db.get('SELECT device_id FROM devices WHERE code=? AND device_id<>?', [c, deviceId]);
@@ -133,6 +135,36 @@ class Store {
     this.db.run('UPDATE devices SET linked=0 WHERE device_id=?', [deviceId]);
     this.onChange('links');
     return { ok: true };
+  }
+
+  // ------------------------------------------------------------ exclusão (LGPD, art. 18)
+  deletedIds() {
+    try { const a = JSON.parse(this.setting('deletedDevices') || '[]'); return Array.isArray(a) ? a : []; } catch (_) { return []; }
+  }
+  isDeleted(deviceId) { return !!deviceId && this.deletedIds().includes(deviceId); }
+
+  /**
+   * Apaga todos os dados de um aparelho (tempo de tela, sessões, questionários, valores de referência e cadastro)
+   * e o marca como retirado do estudo: novos envios dele são recusados e a ponte é avisada para apagar o que tiver.
+   */
+  deleteDevice(deviceId) {
+    const d = this.db.get('SELECT code, participant FROM devices WHERE device_id=?', [deviceId]);
+    if (!d) return { ok: false, error: 'aparelho não encontrado' };
+    const n = {};
+    this.db.tx(() => {
+      for (const t of ['days', 'sessions', 'questionnaires', 'reference']) {
+        n[t] = this.db.get(`SELECT COUNT(*) AS c FROM ${t} WHERE device_id=?`, [deviceId]).c;
+        this.db.db.run(`DELETE FROM ${t} WHERE device_id=?`, [deviceId]);
+      }
+      this.db.db.run('DELETE FROM devices WHERE device_id=?', [deviceId]);
+      const ids = this.deletedIds(); if (!ids.includes(deviceId)) ids.push(deviceId);
+      this.db.db.run("INSERT INTO settings(key,value) VALUES('deletedDevices',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [JSON.stringify(ids)]);
+    });
+    this.db.flush();
+    this.log('info', `Dados do aparelho ${d.code}${d.participant ? ` (${d.participant})` : ''} excluídos a pedido do participante: ${n.days} dias, ${n.sessions} sessões, ${n.questionnaires} questionários`);
+    this.onChange('links');
+    this.onChange('data');
+    return { ok: true, removed: n };
   }
 
   setStudyStart(deviceId, date) {

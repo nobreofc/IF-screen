@@ -1,0 +1,29 @@
+{
+  "devices": 100,
+  "studyDays": 7,
+  "deviceDaysChecked": 700,
+  "exactMatches": 700,
+  "maxAbsDiffMs": 0,
+  "sessionCountMismatches": 0,
+  "missingDays": 0,
+  "daysNotMarkedComplete": 0,
+  "questionnairesExpected": 700,
+  "questionnairesReceived": 700,
+  "devicesLinked": 100,
+  "firstCycleAllLinked": 1,
+  "syncCyclesSimulated": 65,
+  "relayWipedMidStudy": true,
+  "rawEvents": 224919,
+  "screenOnWithoutUnlockDiscarded": 10258,
+  "longSessionsFlagged": 100,
+  "meanScreenTimeMinPerDay": 200,
+  "deviceDaysByLastChannel": {
+    "local": 374,
+    "nuvem": 526
+  },
+  "httpRequestsFromDevices": 16958,
+  "uploadMB": 5.34,
+  "centralDbMB": 3.82,
+  "wallSeconds": 18.8,
+  "dbFile": "/tmp/claude-0/sim2.db"
+}

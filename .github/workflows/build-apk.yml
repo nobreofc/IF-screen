@@ -49,9 +49,9 @@ jobs:
           # Se o download de alguma biblioteca falhar, tenta mais uma vez
           ./gradlew --no-daemon assembleRelease -PIFSCREEN_RELAY_URL="$RELAY" -PIFSCREEN_APP_KEY="$APPKEY" \
             || (sleep 30 && ./gradlew --no-daemon --refresh-dependencies assembleRelease -PIFSCREEN_RELAY_URL="$RELAY" -PIFSCREEN_APP_KEY="$APPKEY")
-          cp app/build/outputs/apk/release/app-release.apk ../IF-Screen-1.0.0.apk
+          cp app/build/outputs/apk/release/app-release.apk ../IF-Screen-1.1.0.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: IF-Screen-apk
-          path: IF-Screen-1.0.0.apk
+          path: IF-Screen-1.1.0.apk

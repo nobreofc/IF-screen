@@ -92,6 +92,11 @@ class Prefs(ctx: Context) {
         get() = sp.getBoolean("usesKeyguardHint", true)
         set(v) = sp.edit().putBoolean("usesKeyguardHint", v).apply()
 
+    /** A Central excluiu os dados deste aparelho a pedido do participante (LGPD) e recusa novos envios. */
+    var removedFromStudy: Boolean
+        get() = sp.getBoolean("removedFromStudy", false)
+        set(v) = sp.edit().putBoolean("removedFromStudy", v).apply()
+
     // confirmações da Central (versão confirmada por dia / questionário)
     fun acks(kind: String): JSONObject = try { JSONObject(sp.getString("acks_$kind", "{}") ?: "{}") } catch (e: Exception) { JSONObject() }
     fun saveAcks(kind: String, o: JSONObject) = sp.edit().putString("acks_$kind", o.toString()).apply()

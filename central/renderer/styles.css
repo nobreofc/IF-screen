@@ -210,3 +210,15 @@ body.printing #print-root { display: block; }
 .rep .pb { page-break-before: always; }
 .rep tr { page-break-inside: avoid; }
 @media print { body { background: #fff; } }
+
+/* Saber mais */
+.info p { font-size: 13.5px; line-height: 1.6; margin: 6px 0 10px; color: var(--ink2); }
+.info a, .card a[data-go] { color: var(--g700); font-weight: 600; cursor: pointer; text-decoration: underline; }
+ul.lst { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.55; color: var(--ink2); }
+ul.lst li { margin-bottom: 7px; }
+ul.lst li::marker { color: var(--g600); }
+.sec-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sec { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
+.sec .chip { flex: none; margin-top: 1px; }
+.sec.r { border-color: #F4C8C9; background: var(--red-bg); }
+.sec.a { border-color: #F3DDB2; background: #FFFBF2; }

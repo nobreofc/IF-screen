@@ -8,7 +8,7 @@ SetCompressorDictSize 64
 
 !define APPNAME "IF Screen Central"
 !define EXENAME "IF Screen Central.exe"
-!define VERSION "1.0.0"
+!define VERSION "1.1.0"
 !define PUBLISHER "Projeto IF Screen - IFRN"
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\IFScreenCentral"
 
@@ -19,7 +19,7 @@ InstallDirRegKey HKLM "Software\IFScreenCentral" "InstallDir"
 RequestExecutionLevel admin
 BrandingText "IF Screen - IFRN"
 
-VIProductVersion "1.0.0.0"
+VIProductVersion "1.1.0.0"
 VIAddVersionKey /LANG=1046 "ProductName" "${APPNAME}"
 VIAddVersionKey /LANG=1046 "CompanyName" "${PUBLISHER}"
 VIAddVersionKey /LANG=1046 "FileDescription" "Instalador do ${APPNAME}"

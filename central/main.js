@@ -88,6 +88,7 @@ const handlers = {
   device: (id) => store.device(id),
   link: ({ code, participant }) => store.link(code, participant),
   unlink: (id) => store.unlink(id),
+  deleteDevice: (id) => store.deleteDevice(id),
   setStudyStart: ({ deviceId, date }) => store.setStudyStart(deviceId, date),
   days: ({ deviceId, from, to }) => store.days(deviceId, from, to),
   sessions: ({ deviceId, date }) => store.sessions(deviceId, date),

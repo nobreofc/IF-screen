@@ -1,6 +1,6 @@
 {
   "name": "ifscreen-relay",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "IF Screen — servidor-ponte entre os celulares e a Central (Railway)",
   "main": "server.js",
   "private": true,

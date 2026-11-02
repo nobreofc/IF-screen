@@ -29,6 +29,10 @@ object SyncManager {
         prefs.ensureIdentity()
         try { DayStore.recompute(app) } catch (e: Exception) { /* sem permissão ou erro de leitura: segue com o que há */ }
 
+        if (prefs.removedFromStudy) {
+            return Result(false, null, "Este aparelho foi retirado do estudo e não envia mais dados. Você pode desinstalar o IF Screen.")
+        }
+
         val channels = ArrayList<Channel>()
         localChannel(app, prefs)?.let { channels.add(it) }
         if (prefs.relayUrl.isNotBlank()) channels.add(Channel("relay", prefs.relayUrl))
@@ -125,6 +129,7 @@ object SyncManager {
             .put("appVersion", BuildConfig.VERSION_NAME)
         val body = JSONObject().put("deviceId", prefs.deviceId).put("code", prefs.code).put("token", prefs.token).put("info", info)
         val r = Http.call(ch.base, "POST", "/api/v1/device/register", body, headers(prefs))
+        if (r.status == 410) prefs.removedFromStudy = true // dados excluídos a pedido do participante
         val ok = r.status == 200
         prefs.setRegistered(key, ok)
         return ok

@@ -23,7 +23,7 @@
   },
   "httpRequestsFromDevices": 16958,
   "uploadMB": 5.34,
-  "centralDbMB": 3.8,
-  "wallSeconds": 13.9,
-  "dbFile": "/tmp/claude-0/sim.db"
+  "centralDbMB": 3.82,
+  "wallSeconds": 18.8,
+  "dbFile": "/tmp/claude-0/sim2.db"
 }

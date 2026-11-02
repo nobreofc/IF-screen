@@ -14,12 +14,12 @@ const { Store, localDate, addDays } = require(path.join(C, 'src', 'store'));
   const store = new Store(db);
   const H = {
     overview: () => store.overview(), devices: () => store.devices(), device: (id) => store.device(id),
-    link: (a) => store.link(a.code, a.participant), unlink: (id) => store.unlink(id), setStudyStart: (a) => store.setStudyStart(a.deviceId, a.date),
+    link: (a) => store.link(a.code, a.participant), unlink: (id) => store.unlink(id), deleteDevice: (id) => store.deleteDevice(id), setStudyStart: (a) => store.setStudyStart(a.deviceId, a.date),
     days: (a) => store.days(a.deviceId, a.from, a.to), sessions: (a) => store.sessions(a.deviceId, a.date), hourly: (a) => store.hourly(a.deviceId, a.date),
     questionnaires: (a) => store.questionnaires(a.from, a.to), validation: (a) => store.validation(a || {}),
     setReference: (a) => store.setReference(a.deviceId, a.date, a.minutes, a.note), settings: () => store.settings(),
     saveSettings: (o) => { store.setSettings(o); return { ok: true }; },
-    status: () => ({ localPort: 8787, ips: [{ address: '192.168.0.10' }], relay: { ok: true, lastPull: Date.now() - 20000 }, today: localDate(), version: '1.0.0', dataDir: 'C:\\Users\\Pesquisa\\AppData\\Roaming\\IF Screen Central' }),
+    status: () => ({ localPort: 8787, ips: [{ address: '192.168.0.10' }], relay: { ok: true, lastPull: Date.now() - 20000 }, today: localDate(), version: '1.1.0', dataDir: 'C:\\Users\\Pesquisa\\AppData\\Roaming\\IF Screen Central' }),
     testRelay: () => ({ ok: true, health: { devices: 60 } }), syncNow: () => ({}), logs: () => db.all('SELECT ts, level, msg FROM log ORDER BY ts DESC LIMIT 30'),
     exportCsv: () => ({ ok: false }), printPdf: () => ({ ok: true }), chooseLogo: () => ({ ok: false }), removeLogo: () => ({ ok: true }), logo: () => null,
     openDataDir: () => ({}), dates: () => ({ today: localDate(), yesterday: addDays(localDate(), -1) }),

@@ -69,6 +69,9 @@ const ICON = {
   right: '<path d="M9 6l6 6-6 6"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   print: '<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2"/><path d="M6 14h12v7H6z"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
 };
 const ico = (n) => `<svg viewBox="0 0 24 24">${ICON[n]}</svg>`;
 const LOGO_SVG = '<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#2F9E41"/><rect x="20" y="9" width="24" height="46" rx="6" fill="none" stroke="#fff" stroke-width="3.6"/><circle cx="32" cy="30.5" r="8.2" fill="none" stroke="#fff" stroke-width="3"/><path d="M32 26v4.6l3.2 2.1" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="27.5" y="47" width="9" height="2.8" rx="1.4" fill="#fff"/></svg>';
@@ -92,7 +95,7 @@ const S = { view: 'painel', params: {}, today: null, settings: {}, pending: 0 };
 const NAV = [
   ['painel', 'Painel', 'home'], ['aparelhos', 'Aparelhos', 'phone'], ['questionarios', 'Questionários', 'form'],
   ['validacao', 'Validação', 'scale'], ['relatorios', 'Relatórios', 'file'], ['protocolo', 'Protocolo de medição', 'book'],
-  ['config', 'Configurações', 'gear'],
+  ['config', 'Configurações', 'gear'], ['saber', 'Saber mais', 'info'],
 ];
 function renderNav() {
   $('#nav').innerHTML = NAV.map(([k, label, ic]) => `<a data-v="${k}" class="${S.view === k || (k === 'aparelhos' && S.view === 'device') ? 'on' : ''}">${ico(ic)}${label}${k === 'aparelhos' && S.pending ? `<span class="badge">${S.pending}</span>` : ''}</a>`).join('');
@@ -238,7 +241,7 @@ VIEWS.aparelhos = async (el) => {
       ${pending.length ? `<table class="t"><thead><tr><th>Código</th><th>Aparelho</th><th>Android</th><th>Primeiro contato</th><th>Último contato</th><th></th></tr></thead><tbody>
       ${pending.map((d) => `<tr><td class="mono strong">${esc(d.code)}</td><td>${esc([d.info.manufacturer, d.info.model].filter(Boolean).join(' '))}</td><td>${esc(d.info.androidVersion || '')}</td>
         <td>${new Date(d.registeredAt).toLocaleString('pt-BR')}</td><td>${fmtAgo(d.lastSeen)} ${channelChip(d.lastChannel)}</td>
-        <td class="n"><button class="btn sm" data-fill="${esc(d.code)}">Usar código</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nenhum aparelho aguardando.</div>'}
+        <td class="n"><button class="btn sm" data-fill="${esc(d.code)}">Usar código</button> <button class="btn sm ghost danger" data-del="${esc(d.deviceId)}" data-name="${esc(d.code)}" title="Excluir os dados deste aparelho (LGPD)">Excluir</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nenhum aparelho aguardando.</div>'}
     </div>
     <div class="card mt"><h2>Vinculados <span class="chip g">${linked.length}</span></h2><p class="hint">O início do estudo (D1) é o dia seguinte ao vínculo; pode ser ajustado</p>
       ${linked.length ? `<table class="t"><thead><tr><th>Participante</th><th>Código</th><th>Aparelho</th><th>App</th><th>Vinculado em</th><th>Início do estudo (D1)</th><th>Contato</th><th></th></tr></thead><tbody>
@@ -246,8 +249,9 @@ VIEWS.aparelhos = async (el) => {
         <td>${esc(d.hb.appVersion || d.info.appVersion || '')}</td><td>${d.linkedAt ? new Date(d.linkedAt).toLocaleString('pt-BR') : ''}</td>
         <td><input type="date" class="in" value="${esc(d.studyStart || '')}" data-ss="${esc(d.deviceId)}"></td>
         <td>${fmtAgo(d.lastSeen)} ${channelChip(d.lastChannel)}</td>
-        <td class="n"><button class="btn sm" data-open="${esc(d.deviceId)}">Abrir</button> <button class="btn sm ghost danger" data-unlink="${esc(d.deviceId)}" data-name="${esc(d.participant)}">Desvincular</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nenhum aparelho vinculado.</div>'}
-    </div>`;
+        <td class="n"><button class="btn sm" data-open="${esc(d.deviceId)}">Abrir</button> <button class="btn sm ghost" data-unlink="${esc(d.deviceId)}" data-name="${esc(d.participant)}">Desvincular</button> <button class="btn sm ghost danger" data-del="${esc(d.deviceId)}" data-name="${esc(d.participant)}" title="Excluir todos os dados deste participante (LGPD)">Excluir dados</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nenhum aparelho vinculado.</div>'}
+    </div>
+    <div class="banner g mt">${ico('shield').replace('<svg', '<svg width="20" height="20" stroke="currentColor" fill="none" stroke-width="2" style="flex:none"')}<div class="bt"><b>Privacidade.</b> Use códigos (ex.: P001) para identificar participantes, nunca o nome. <b>Desvincular</b> mantém os dados já recebidos; <b>Excluir dados</b> apaga tudo do participante e retira o aparelho do estudo, como pede a LGPD quando o participante ou o responsável solicita a exclusão ou retira o consentimento.</div></div>`;
   const code = $('#fCode');
   code.addEventListener('input', () => {
     let v = code.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
@@ -266,6 +270,15 @@ VIEWS.aparelhos = async (el) => {
   $$('[data-unlink]', el).forEach((b) => b.addEventListener('click', async () => {
     if (!confirm(`Desvincular ${b.dataset.name}? Os dados já recebidos são mantidos.`)) return;
     await api.unlink(b.dataset.unlink); toast('Aparelho desvinculado'); render();
+  }));
+  $$('[data-del]', el).forEach((b) => b.addEventListener('click', async () => {
+    const n = b.dataset.name;
+    if (!confirm(`Excluir TODOS os dados de ${n}?\n\nSerão apagados o tempo de tela, as sessões, os questionários e os valores de referência. O aparelho é retirado do estudo e não poderá enviar novos dados. A ponte na nuvem também é avisada para apagar o que tiver.\n\nUse quando o participante ou o responsável pedir a exclusão ou retirar o consentimento. Não é possível desfazer.`)) return;
+    if (!confirm(`Confirma a exclusão definitiva dos dados de ${n}?`)) return;
+    const r = await api.deleteDevice(b.dataset.del);
+    if (r && r.ok) toast(`Dados de ${n} excluídos. As cópias de segurança automáticas antigas são substituídas em até 14 dias.`);
+    else toast((r && r.error) || 'Não foi possível excluir', true);
+    render();
   }));
   $$('[data-ss]', el).forEach((i) => i.addEventListener('change', async () => { await api.setStudyStart({ deviceId: i.dataset.ss, date: i.value }); toast('Início do estudo atualizado'); }));
 };
@@ -696,6 +709,118 @@ VIEWS.protocolo = async (el) => {
         Um dia entra nas médias quando está <b>completo</b>: terminou e o registro cobre de 00:00 a 23:59. O dia em andamento e dias com cobertura parcial aparecem, mas são marcados.<br><br>
         A concordância com o padrão-ouro é avaliada por <b>Bland-Altman para medidas repetidas</b> (viés e limites de 95%), erro absoluto médio e correlação de medidas repetidas, seguindo Kristensen et al. (2022) e a terminologia COSMIN (validade de critério).</p></div>
     </div>`;
+};
+
+// ------------------------------------------------------------------ saber mais
+function securityChecks(s, st, devs) {
+  const out = [];
+  const add = (level, title, text) => out.push({ level, title, text });
+  // chaves
+  if (s.relayEnabled === 'true') {
+    if (!s.centralKey) add('r', 'CENTRAL_KEY vazia', 'Defina uma chave longa no Railway e cole-a em Configurações → Nuvem.');
+    else if (s.centralKey.length < 20) add('a', 'CENTRAL_KEY curta', `Tem ${s.centralKey.length} caracteres. Use 20 ou mais, com letras e números aleatórios.`);
+    else add('g', 'CENTRAL_KEY forte', `${s.centralKey.length} caracteres. Só a Central consegue ler os dados da ponte.`);
+    if (/^https:\/\//i.test(s.relayUrl || '')) add('g', 'Nuvem criptografada', 'O endereço do Railway usa HTTPS: os dados viajam criptografados.');
+    else add('r', 'Nuvem sem HTTPS', 'O endereço da ponte deve começar com https://.');
+  } else add('b', 'Nuvem desativada', 'Só a rede local está em uso. Nenhum dado passa pela internet.');
+  if ((s.appKey || '') === 'ifscreen-app-key') add('a', 'APP_KEY padrão', 'A chave do app é a padrão do projeto, que aparece na documentação. Para a coleta oficial, troque-a no Railway e aqui, e gere o APK de novo com a nova chave.');
+  else add('g', 'APP_KEY própria', 'Só o app gerado com esta chave consegue cadastrar aparelhos.');
+  add('b', 'Rede local sem criptografia', 'Na rede local os dados viajam por HTTP. Use só a rede Wi-Fi da pesquisa, protegida por senha (WPA2 ou WPA3).');
+  // minimização: participantes identificados por código
+  const named = devs.filter((d) => d.linked && d.participant && !/^[A-Za-z]{0,4}[-_ ]?\d{1,6}$/.test(d.participant.trim()));
+  if (named.length) add('a', `${named.length} participante(s) com identificação fora do padrão`, `Ex.: “${esc(named[0].participant)}”. Use códigos como P001 em vez de nomes, para não guardar dados pessoais desnecessários.`);
+  else add('g', 'Participantes pseudonimizados', 'Todos os vinculados estão identificados por código.');
+  if (s.showScreenTime === 'true') add('a', 'Modo teste ligado', 'O participante vê o próprio tempo medido. Desligue em Configurações antes da coleta oficial.');
+  add('b', 'Dados guardados neste computador', `${esc(st.dataDir)} · cópias de segurança automáticas dos últimos 14 dias. Proteja a conta do Windows com senha e, se possível, ative a criptografia do disco (BitLocker).`);
+  return out;
+}
+
+VIEWS.saber = async (el) => {
+  const s = await api.settings(); S.settings = s;
+  const st = await api.status();
+  const devs = await api.devices();
+  const checks = securityChecks(s, st, devs);
+  const lv = { g: ['g', 'OK'], a: ['a', 'Atenção'], r: ['r', 'Corrigir'], b: ['b', 'Informação'] };
+  const li = (a) => `<ul class="lst">${a.map((x) => `<li>${x}</li>`).join('')}</ul>`;
+  el.innerHTML = `
+    <div class="head"><div><h1>Saber mais</h1><div class="sub">O projeto, a vantagem sobre o padrão-ouro, a LGPD e a segurança do IF Screen</div></div></div>
+    <div class="grid g21">
+      <div class="card info"><h2>Sobre o projeto</h2>
+        <p>O <b>IF Screen</b> mede, de forma objetiva e remota, o tempo de tela de smartphones Android. Ele foi desenvolvido por <b>Daniel Reginaldo da Silva</b>, estudante do Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas do IFRN, para o projeto de pesquisa <b>“Associação entre aptidão física e desempenho cognitivo e acadêmico em adolescentes da rede federal de ensino”</b>, coordenado pelo <b>Prof. Rodrigo Ramalho Aniceto</b>.</p>
+        <p>O objetivo é fornecer ao estudo uma medida confiável da exposição a telas no dia a dia, para analisar a sua relação com o desempenho acadêmico.</p></div>
+      <div class="card info"><h2>Em uma frase</h2><p>Conta o tempo em que o celular está <b>desbloqueado e com a tela ligada</b>, calcula tudo no próprio aparelho e envia só os totais e os horários das sessões — sem prints, sem conteúdo, sem nomes de aplicativos.</p>
+        <p class="muted" style="margin:0">Detalhes do algoritmo em <a data-go="protocolo">Protocolo de medição</a>.</p></div>
+    </div>
+
+    <div class="card mt"><h2>Vantagem em relação ao padrão-ouro</h2><p class="hint">O padrão-ouro é o Bem-estar Digital do próprio Android. Ele mede bem, mas não foi feito para pesquisa: o pesquisador precisa ver o celular ou pedir prints ao participante.</p>
+      <table class="t protocol"><thead><tr><th>Aspecto</th><th>Bem-estar Digital (prints)</th><th>IF Screen</th></tr></thead><tbody>
+        <tr><td>Como os dados chegam</td><td>O participante tira prints e envia, ou o pesquisador anota olhando o celular</td><td class="yes">Automático e remoto, pela rede da escola ou pela internet</td></tr>
+        <tr><td>Esforço do participante</td><td>Diário, depende de lembrar e enviar</td><td class="yes">Nenhum: só o questionário de 20 segundos</td></tr>
+        <tr><td>Histórico</td><td>Cerca de uma semana; o que não foi anotado se perde</td><td class="yes">Guardado no celular até a Central confirmar</td></tr>
+        <tr><td>Erros de transcrição</td><td>Possíveis (leitura e digitação dos prints)</td><td class="yes">Nenhum: números calculados e transmitidos</td></tr>
+        <tr><td>Detalhe</td><td>Total do dia</td><td class="yes">Cada sessão (início e fim), por hora e por dia</td></tr>
+        <tr><td>Acompanhamento</td><td>Só quando o participante envia</td><td class="yes">Em tempo real, com alertas de falha</td></tr>
+        <tr><td>Privacidade</td><td>O print mostra os aplicativos usados e passa por apps de mensagem</td><td class="yes">Só horários e totais; canal criptografado</td></tr>
+      </tbody></table></div>
+
+    <div class="card mt"><div class="row" style="justify-content:space-between;align-items:center"><div><h2>Verificação de segurança desta Central</h2><p class="hint" style="margin:0">Calculada agora, a partir das configurações e dos aparelhos</p></div>
+      <span class="chip ${checks.some((c) => c.level === 'r') ? 'r' : checks.some((c) => c.level === 'a') ? 'a' : 'g'}">${checks.filter((c) => c.level === 'g').length} OK · ${checks.filter((c) => c.level === 'a' || c.level === 'r').length} a revisar</span></div>
+      <div class="sec-list mt">${checks.map((c) => `<div class="sec ${c.level}"><span class="chip ${lv[c.level][0]}">${lv[c.level][1]}</span><div><b>${c.title}</b><div class="muted">${c.text}</div></div></div>`).join('')}</div></div>
+
+    <div class="grid g2 mt">
+      <div class="card info"><h2>O que é coletado</h2>${li([
+        '<b>Sessões de uso:</b> horário de início (desbloqueio) e de fim (tela apagada ou bloqueio) de cada sessão.',
+        '<b>Totais por dia:</b> tempo de tela, tempo na tela inicial, tempo desligado e indicadores de qualidade.',
+        '<b>Questionário diário:</b> se assistiu TV e se usou computador ou notebook, e por quanto tempo.',
+        '<b>Dados técnicos:</b> fabricante, modelo e versão do Android, versão do app, permissões e otimização de bateria.',
+        '<b>Identificação:</b> código do aparelho (IFS-XXXX-XXXX) e o código do participante dado pela equipe.'])}</div>
+      <div class="card info"><h2>O que nunca é coletado</h2>${li([
+        'Nomes dos aplicativos usados, sites visitados ou buscas.',
+        'Mensagens, conversas, e-mails, fotos, vídeos, áudio ou câmera.',
+        'Contatos, senhas, localização ou o conteúdo da tela.',
+        'Nome do participante: a equipe usa um código (P001).'])}
+        <p class="muted" style="margin:10px 0 0">Para separar o tempo na tela inicial, o app verifica dentro do próprio celular se ela está aberta. Essa verificação não sai do aparelho.</p></div>
+    </div>
+
+    <div class="grid g2 mt">
+      <div class="card info"><h2>LGPD — base legal e ética</h2>${li([
+        '<b>Lei nº 13.709/2018 (LGPD).</b> O IFRN é órgão de pesquisa (art. 5º, XVIII). O tratamento se apoia na realização de estudos por órgão de pesquisa (art. 7º, IV), com anonimização sempre que possível na divulgação.',
+        '<b>Adolescentes (art. 14).</b> O tratamento deve atender ao melhor interesse do adolescente. A ANPD admite as bases dos arts. 7º e 11 nesse caso (Enunciado CD/ANPD nº 1/2023).',
+        '<b>Ética em pesquisa.</b> Coleta só depois da aprovação do Comitê de Ética em Pesquisa (Resoluções CNS nº 466/2012 e nº 510/2016), com o Termo de Consentimento (TCLE) assinado pelo responsável e o Termo de Assentimento (TALE) pelo adolescente.',
+        '<b>Necessidade (art. 6º, III).</b> Só o tempo de tela e o questionário: o mínimo para responder à pergunta da pesquisa.'])}</div>
+      <div class="card info"><h2>Direitos do participante (art. 18) e como atender</h2>${li([
+        '<b>Confirmação e acesso:</b> abra o aparelho em Aparelhos e mostre ou exporte os dados (Relatórios → CSV).',
+        '<b>Correção:</b> o tempo é medido; as respostas do questionário podem ser corrigidas pelo próprio participante até o fim do dia seguinte.',
+        '<b>Eliminação e revogação do consentimento:</b> Aparelhos → <b>Excluir dados</b>. Apaga tudo na Central, avisa a ponte e recusa novos envios do aparelho.',
+        '<b>Informação:</b> o app tem a tela “Saber mais”, com o que é e o que não é coletado.',
+        '<b>Incidente de segurança (art. 48):</b> comunique o coordenador da pesquisa, o CEP e, se houver risco aos participantes, a ANPD e os próprios titulares.'])}</div>
+    </div>
+
+    <div class="grid g2 mt">
+      <div class="card info"><h2>Como o sistema protege os dados</h2>${li([
+        'Cada celular cria uma chave secreta própria (256 bits). A Central e a ponte guardam só o resumo criptográfico (SHA-256) e comparam em tempo constante.',
+        'A ponte só aceita cadastro com a <b>APP_KEY</b> e só entrega dados à Central com a <b>CENTRAL_KEY</b>.',
+        'Na internet, o tráfego usa HTTPS. A ponte limita requisições por endereço e o tamanho de cada envio.',
+        'A ponte é só uma caixa postal: apaga o conteúdo confirmado pela Central após 2 dias e não grava em disco sem um volume configurado.',
+        'A interface da Central roda isolada (sandbox, isolamento de contexto e política de conteúdo restritiva).',
+        'Excluir dados apaga o participante na Central e na ponte e bloqueia o aparelho.'])}</div>
+      <div class="card info"><h2>Boas práticas da equipe</h2>${li([
+        'Proteja a conta do Windows com senha e bloqueie a tela ao sair.',
+        'Ative o BitLocker (criptografia do disco) no computador da Central.',
+        'Não compartilhe a CENTRAL_KEY; troque a APP_KEY padrão antes da coleta oficial.',
+        'Use uma rede Wi-Fi da pesquisa com senha; evite redes abertas.',
+        'Guarde as exportações (CSV e PDF) em pasta protegida e apague cópias soltas.',
+        'Ao terminar o estudo, exporte os dados, exclua o serviço no Railway e mantenha a base só pelo prazo aprovado pelo CEP.'])}</div>
+    </div>
+
+    <div class="card mt"><h2>Referências</h2><p class="hint" style="margin:0;line-height:1.7">
+      BRASIL. Lei nº 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais (LGPD).<br>
+      AUTORIDADE NACIONAL DE PROTEÇÃO DE DADOS. Enunciado CD/ANPD nº 1, de 22 de maio de 2023.<br>
+      CONSELHO NACIONAL DE SAÚDE. Resolução nº 466, de 12 de dezembro de 2012; Resolução nº 510, de 7 de abril de 2016.<br>
+      KRISTENSEN, P. L. et al. Criterion validity of a research-based application for tracking screen time on android and iOS smartphones and tablets. Computers in Human Behavior Reports, v. 5, 100164, 2022.<br>
+      OHME, J. et al. Mobile data donations: assessing self-report accuracy and sample biases with the iOS Screen Time function. Mobile Media &amp; Communication, v. 9, n. 2, p. 293-313, 2021.</p></div>
+    <p class="muted" style="text-align:center;margin:18px 0 4px">IF Screen Central ${esc(st.version)} · IFRN</p>`;
+  $$('[data-go]', el).forEach((a) => a.addEventListener('click', () => go(a.dataset.go)));
 };
 
 // ------------------------------------------------------------------ configurações

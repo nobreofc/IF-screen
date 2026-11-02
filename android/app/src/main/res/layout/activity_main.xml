@@ -368,6 +368,14 @@
                 android:text="Conexão" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnInfo"
+            style="@style/BtnSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Saber mais · privacidade e segurança" />
+
         <!-- Rodapé -->
         <ImageView
             android:id="@+id/imgInst"

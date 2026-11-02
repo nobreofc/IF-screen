@@ -1,7 +1,7 @@
 'use strict';
 const { contextBridge, ipcRenderer } = require('electron');
 
-const names = ['overview', 'devices', 'device', 'link', 'unlink', 'setStudyStart', 'days', 'sessions', 'hourly',
+const names = ['overview', 'devices', 'device', 'link', 'unlink', 'deleteDevice', 'setStudyStart', 'days', 'sessions', 'hourly',
   'questionnaires', 'validation', 'setReference', 'settings', 'saveSettings', 'status', 'testRelay', 'syncNow',
   'logs', 'exportCsv', 'printPdf', 'chooseLogo', 'removeLogo', 'logo', 'openDataDir', 'dates'];
 

@@ -62,7 +62,7 @@ class RelaySync {
     try {
       // 1) vínculos + configuração (a ponte é reconstruída a partir da Central)
       if (this.linksDirty || Date.now() - this.lastLinksPush > 5 * 60000) {
-        const r = await this.req('POST', '/api/v1/central/links', { links: this.store.links(), config: this.store.appConfig() });
+        const r = await this.req('POST', '/api/v1/central/links', { links: this.store.links(), config: this.store.appConfig(), forgotten: this.store.deletedIds() });
         this.state.devicesOnRelay = (r.devices || []).length;
         this.lastLinksPush = Date.now(); this.linksDirty = false;
       }
@@ -83,6 +83,11 @@ class RelaySync {
         }
         const acks = []; let applied = 0;
         for (const it of r.items || []) {
+          if (this.store.isDeleted(it.deviceId)) {
+            // participante retirado do estudo: nada é gravado; o ack faz o celular parar de reenviar
+            if (it.kind === 'day' || it.kind === 'q') acks.push({ deviceId: it.deviceId, kind: it.kind, key: it.key, version: it.version });
+            continue;
+          }
           if (it.kind === 'register') {
             const res = this.store.registerDevice(it.payload, 'nuvem');
             if (!res.ok) this.onLog('warn', `cadastro rejeitado (${it.deviceId}): ${res.error}`);

@@ -2,7 +2,7 @@
 
 **Sistema de pesquisa para medir somente o tempo de tela de smartphones Android, tendo o Bem-estar Digital do próprio Android como padrão-ouro.**
 
-Projetado para um estudo do **IFRN** com **100 celulares durante 7 dias, 24 horas por dia**. São três partes:
+Desenvolvido por **Daniel Reginaldo da Silva** (Tecnologia em Análise e Desenvolvimento de Sistemas, IFRN) para o projeto de pesquisa *“Associação entre aptidão física e desempenho cognitivo e acadêmico em adolescentes da rede federal de ensino”*, coordenado pelo **Prof. Rodrigo Ramalho Aniceto**. Projetado para **100 celulares durante 7 dias, 24 horas por dia**. A vantagem sobre o padrão-ouro: os dados chegam sozinhos, à distância, sem pedir prints ao participante e seguindo a LGPD. São três partes:
 
 - um **app Android** que mede o tempo de tela e aplica um questionário diário;
 - uma **Central Windows** (`.exe`) que recebe, organiza e analisa os dados;
@@ -10,8 +10,8 @@ Projetado para um estudo do **IFRN** com **100 celulares durante 7 dias, 24 hora
 
 | | |
 |---|---|
-| 📄 [Manual de uso (PDF)](docs/IF-Screen-Manual-de-Uso.pdf) | Instalação, vínculo, rotina, testes e solução de problemas |
-| 📑 [Artigo do projeto (PDF)](docs/IF-Screen-Artigo.pdf) | Métodos, algoritmo, verificação técnica e protocolo de validação |
+| 📄 Manual de uso — ABNT ([PDF](docs/IF-Screen-Manual-de-Uso.pdf) · [Word](docs/IF-Screen-Manual-de-Uso.docx)) | Instalação, vínculo, rotina, validação, LGPD, segurança e solução de problemas |
+| 📑 Artigo científico — ABNT NBR 6022 ([PDF](docs/IF-Screen-Artigo.pdf) · [Word](docs/IF-Screen-Artigo.docx)) | Referencial, métodos, algoritmo, verificação técnica e protocolo de validação |
 | 📊 [Planilha de teste X × Y](docs/IF-Screen-Relatorio-de-Teste.xlsx) | Compara o IF Screen com o Bem-estar Digital e dá o veredito |
 | 📐 [Métricas: o que conta e o que é descartado](docs/METRICAS.md) | Definição operacional completa |
 
@@ -192,7 +192,7 @@ ifscreen/
 
 **Opção A — usar o instalador pronto**
 
-1. Execute `IF-Screen-Central-Setup-1.0.0.exe`.
+1. Execute `IF-Screen-Central-Setup-1.1.0.exe`.
    - O instalador não tem assinatura comercial, então o Windows pode avisar.
    - Nesse caso, clique em **Mais informações → Executar assim mesmo**.
 2. O instalador cria os atalhos e libera no Firewall as portas **TCP 8787** e **UDP 8788**.
@@ -207,7 +207,7 @@ ifscreen/
 ```bash
 cd central
 npm ci
-npm run dist:win        # gera dist/IF-Screen-Central-Setup-1.0.0.exe
+npm run dist:win        # gera dist/IF-Screen-Central-Setup-1.1.0.exe
 ```
 
 **Configurar a Central** (menu **Configurações**)
@@ -231,7 +231,7 @@ Os dados ficam em `%APPDATA%\IF Screen Central`. Há cópias de segurança autom
    - **Endereço do servidor-ponte:** o endereço do Railway. Também pode ficar vazio e ser preenchido depois, no app.
    - **APP_KEY:** a mesma usada no Railway e na Central.
 3. Espere de 5 a 8 minutos.
-4. Baixe o artefato **IF-Screen-apk**. Ele contém `IF-Screen-1.0.0.apk`.
+4. Baixe o artefato **IF-Screen-apk**. Ele contém `IF-Screen-1.1.0.apk`.
 
 **Opção B — Android Studio**
 
@@ -472,7 +472,7 @@ Os celulares falam com a Central (rede local, `http://IP:8787`) e com a ponte (`
 | `GET /api/v1/device/status` | celular | `x-device-id` + `x-device-token` | Vínculo, configuração e versões confirmadas pela Central |
 | `GET /api/v1/central/pull?after=N` | Central → ponte | `Authorization: Bearer CENTRAL_KEY` | Lê novidades por cursor |
 | `POST /api/v1/central/ack` | Central → ponte | `Bearer` | Confirma o que gravou |
-| `POST /api/v1/central/links` | Central → ponte | `Bearer` | Republica vínculos e configuração |
+| `POST /api/v1/central/links` | Central → ponte | `Bearer` | Republica vínculos, configuração e a lista de aparelhos excluídos (`forgotten`) |
 | `GET /health` | qualquer um | — | Saúde do serviço |
 
 Descoberta na rede local:
@@ -542,7 +542,11 @@ A Central envia ao app, a cada sincronização:
 - **Retenção na ponte.** A ponte apaga o conteúdo já confirmado depois de 2 dias.
 - **Chave de assinatura do APK.** `android/app/ifscreen-release.jks`, senha `ifscreen2026`, serve para o estudo. **Para publicar o app fora da pesquisa, gere uma chave nova** e informe as senhas por `-PIFSCREEN_STORE_PASSWORD` e `-PIFSCREEN_KEY_PASSWORD`.
 
-O estudo de campo deve passar pelo Comitê de Ética em Pesquisa e seguir a LGPD.
+**LGPD (versão 1.1.0):**
+
+- **Saber mais.** O app e a Central têm uma tela *Saber mais* com o que é e o que não é coletado, os direitos do participante e as medidas de segurança. No app, ela mostra a situação de segurança do próprio aparelho; na Central, uma **verificação de segurança** automática (força da `CENTRAL_KEY`, HTTPS, `APP_KEY` padrão, participantes identificados por código, Modo teste).
+- **Excluir dados.** Em *Aparelhos → Excluir dados*, a Central apaga tempo de tela, sessões, questionários e valores de referência do participante, avisa a ponte para apagar o que tiver e recusa novos envios do aparelho (o app passa a mostrar *Retirado do estudo*). Atende ao direito de eliminação e à revogação do consentimento (LGPD, art. 18).
+- **Base legal.** Estudos por órgão de pesquisa (LGPD, art. 7º, IV) e melhor interesse do adolescente (art. 14; Enunciado CD/ANPD nº 1/2023). A coleta só começa após aprovação do Comitê de Ética em Pesquisa, com TCLE do responsável e TALE do adolescente.
 
 ---
 
@@ -583,4 +587,4 @@ O estudo de campo deve passar pelo Comitê de Ética em Pesquisa e seguir a LGPD
 
 ---
 
-<sub>IF Screen 1.0.0 · algoritmo ifs-unlock-1 · Projeto de pesquisa IFRN. Os arquivos `package.json` declaram licença MIT; adicione um arquivo `LICENSE` se for publicar o repositório.</sub>
+<sub>IF Screen 1.1.0 · algoritmo ifs-unlock-1 · Projeto de pesquisa IFRN. Os arquivos `package.json` declaram licença MIT; adicione um arquivo `LICENSE` se for publicar o repositório.</sub>

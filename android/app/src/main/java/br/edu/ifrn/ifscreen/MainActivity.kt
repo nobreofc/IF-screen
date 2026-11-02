@@ -69,6 +69,9 @@ class MainActivity : Activity() {
         }
         findViewById<Button>(R.id.btnSync).setOnClickListener { syncInBackground(true) }
         findViewById<Button>(R.id.btnConn).setOnClickListener { showConnectionDialog() }
+        findViewById<Button>(R.id.btnInfo).setOnClickListener {
+            startActivity(Intent(this, InfoActivity::class.java))
+        }
 
         MonitorService.ensureRunning(this)
     }
@@ -142,7 +145,10 @@ class MainActivity : Activity() {
         findViewById<View>(R.id.btnBattery).visibility = if (battery) View.GONE else View.VISIBLE
 
         val link = findViewById<TextView>(R.id.txtLink)
-        if (prefs.linked) {
+        if (prefs.removedFromStudy) {
+            link.text = "Retirado do estudo"
+            link.setTextColor(getColor(R.color.red))
+        } else if (prefs.linked) {
             link.text = if (prefs.participant.isNotBlank()) "Vinculado · ${prefs.participant}" else "Vinculado"
             link.setTextColor(getColor(R.color.green_dark))
         } else {
